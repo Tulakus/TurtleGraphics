@@ -127,7 +127,7 @@ export class Reporter {
         function showTooltipFor(e, content, node) {
             var tooltip = showTooltip(e, content);
             function hide() {
-                (<any>CodeMirror).off(node, "mouseout", hide);
+                CodeMirror.off(node, "mouseout", hide);
                 if (tooltip) { hideTooltip(tooltip); tooltip = null; }
             }
             var poll = setInterval(function () {
@@ -138,7 +138,7 @@ export class Reporter {
                 }
                 if (!tooltip) return clearInterval(poll);
             }, 400);
-            (<any>CodeMirror).on(node, "mouseout", hide);
+            CodeMirror.on(node, "mouseout", hide);
         }
         function showTooltip(e, content) {
             var tt = document.createElement("div");
@@ -148,13 +148,13 @@ export class Reporter {
 
             function position(e) {
                 if (!tt.parentNode) {
-                    (<any>CodeMirror).off(document, "mousemove", position);
+                    CodeMirror.off(document, "mousemove", position);
                     return;
                 } 
                 tt.style.top = Math.max(0, e.clientY - tt.offsetHeight - 5) + "px";
                 tt.style.left = (e.clientX + 5) + "px";
             };
-            (<any>CodeMirror).on(document, "mousemove", position); 
+            CodeMirror.on(document, "mousemove", position); 
             position(e);
             if (tt.style.opacity != null) tt.style.opacity = "1";
             return tt;
@@ -176,7 +176,7 @@ export class Reporter {
             inner.className = "CodeMirror-lint-marker-multiple"; 
         }
 
-        if (tooltips != false) (<any>CodeMirror).on(inner, "mouseover", function (e) {
+        if (tooltips != false) CodeMirror.on(inner, "mouseover", function (e) {
             showTooltipFor(e, labels, inner);
         });
         return marker;
