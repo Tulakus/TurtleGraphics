@@ -1,0 +1,22 @@
+{
+  "name": "Turtlegraphic",
+  "version": "1.0.0",
+  "description": "",
+  "typescript": {
+    "main": "src/app.ts"
+  },
+  "bobril": {
+    "title": "Turtlegraphic"
+  },
+  "author": "tulak",
+  "license": "",
+  "dependencies": {
+    "bobflux": "^2.0.0",
+    "bobflux-monitor": "^1.0.0",
+    "bobril": "^4.20.0",
+    "fun-model": "^1.0.0"
+  },
+  "devDependencies": {
+    "requirejs": "^2.1.22"
+  }
+}
