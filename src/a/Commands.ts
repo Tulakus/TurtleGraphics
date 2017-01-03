@@ -1,9 +1,14 @@
 import * as b from 'bobril';
-import {FunctionTNode, ArgumentTNode, OpenBracketTNode, BlockTNode, RootTNode, TNode} from './Node';
-import {TokenType, IToken} from './Tokenizer';
-import {Reporter, IError} from './Reporter';
+import {BlockTNode} from './Node';
+import {TokenType} from './Tokenizer';
+import {Reporter} from './Reporter';
 
-interface ICommand { command: string, nextValue: string, calledFunc: (p: string, q?: string[]) => any }
+interface ICommand { 
+  command: string;
+  nextValue: string;
+  calledFunc: (p: string, q?: string[]) => any; 
+}
+
 export default class Commands {
   constructor(reporter: Reporter) {
     this.reporter = reporter;
@@ -17,19 +22,20 @@ export default class Commands {
   pColor: string = 'Black';
   pWidth: number = 1;
   results: any[] = [];
-  subresult: string = ""+ this.lastX + "," + this.lastY + " ";
+  subresult: string = '' + this.lastX + ',' + this.lastY + ' ';
   shouldCreateNewLine: boolean = false;
   
   private createNewLine(){
-    let newLine = ""+ this.lastX + "," + this.lastY + " ";
-    if (newLine == this.subresult)
+    let newLine = '' + this.lastX + ',' + this.lastY + ' ';
+    if (newLine === this.subresult)
       return;
-    let result = { points: this.subresult, styleDef: b.styleDef({ fill: "white", stroke: this.pColor, strokeWidth: this.pWidth + 'px' }) };
+    let result = { points: this.subresult, styleDef: b.styleDef({ fill: 'white', stroke: this.pColor, strokeWidth: this.pWidth + 'px' }) };
     this.results.push(result);
     
     this.subresult = newLine;
     this.shouldCreateNewLine = false;
   }
+  
   commands: ICommand[] = [
     { command: "tl", nextValue: "number", calledFunc: (p: string) => { return this.changeAngle(p, true) } },
     { command: "tr", nextValue: "number", calledFunc: (p: string) => { return this.changeAngle(p, false) } },
@@ -47,30 +53,30 @@ export default class Commands {
     
   }
   
-  private traverse(node: BlockTNode){
-    if (node.children.length == 0)
-      this.reporter.reportError(0, 0, 0, "Error - incorrectly parsed command");
+private traverse(node: BlockTNode){
+    if (node.children.length === 0)
+      this.reporter.reportError(0, 0, 0, 'Error - incorrectly parsed command');
       
     for (var i = 0; i <= node.children.length - 1; i++) {
-      if (node.children[i].type != TokenType.keyword) 
+      if (node.children[i].type !== TokenType.keyword) 
         continue;
       
-      if (node.children[i].rightChild == null) {
-        let a = this.commands.filter((e) => { return e.command === node.children[i].value })[0];
-        let args = node.children[i].leftChild == null || undefined ? [] : [node.children[i].leftChild.value];
+      if (node.children[i].rightChild === undefined) {
+        let a = this.commands.filter((e) => { return e.command === node.children[i].value; })[0];
+        let args = node.children[i].leftChild === undefined || null ? [] : [node.children[i].leftChild.value];
         let res = a.calledFunc.apply(null, args);
         
-        if(res == null || res == true)
+        if(res === undefined || res === null || res === true)
           continue;
                     
-        this.subresult = this.subresult + res.newX + "," + res.newY + " ";
+        this.subresult = this.subresult + res.newX + ',' + res.newY + ' ';
       } else {
-        if (node.children[i].leftChild.value.length == 0)
+        if (node.children[i].leftChild.value.length === 0)
           continue;
 
-        var repeatTimes: number = parseInt(node.children[i].leftChild.value);
+        var repeatTimes: number = parseInt(node.children[i].leftChild.value, 10);
         if (Number.isNaN(repeatTimes))
-          this.reporter.reportError(0, 0, 0, "Repeat times musst be integer value");
+          this.reporter.reportError(0, 0, 0, 'Repeat times musst be integer value');
         for (var j = 0; j < repeatTimes; j++) {
           this.traverse(<BlockTNode>node.children[i].rightChild);
         }
@@ -79,30 +85,30 @@ export default class Commands {
   }
 
   getResult(): any[] {
-    this.createNewLine()
+    this.createNewLine();
     return this.results;
   }
 
   private setPainting(v: boolean): boolean {
     this.createNewLine();
     this.isPaintng = v;
-    return true
+    return true;
   }
 
   private setPenColor(v: string): boolean {
     this.createNewLine();
     this.pColor = v;
-    return true
+    return true;
   }
 
   private setPenWidth(v: string): boolean {
-    let m = parseInt(v);
+    let m = parseInt(v, 10);
     if (m < 1)
       this.reporter.reportError(0, 0, 0, 'Pen width musst be number > 1');
     this.createNewLine();
     this.pWidth = m;
     
-    return true
+    return true;
   }
 
   private createLine(moveBy: string, forward: boolean): any {
@@ -119,14 +125,14 @@ export default class Commands {
 
   private changeAngle(changeBy: string, increase: boolean): any {
     let m = Number.parseInt(changeBy);
-    increase == true ? this.lastAngle = this.lastAngle + m : this.lastAngle = this.lastAngle + (360 - m);
+    increase === true ? this.lastAngle = this.lastAngle + m : this.lastAngle = this.lastAngle + (360 - m);
     this.lastAngle = this.lastAngle % 360;
-    //return null;
+    // return null;
   }
 
   private calculateNextPoint(moveBy: number, forward: boolean): any {
     let toDegrees = Math.PI / 180;
-    //if true -> forward else backward
+    // if true -> forward else backward
     forward ? moveBy : moveBy = - moveBy;
 
     let helpX = Math.cos(this.lastAngle * toDegrees) * moveBy;

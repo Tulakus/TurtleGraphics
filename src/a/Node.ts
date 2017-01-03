@@ -1,31 +1,31 @@
 import {ParameterType} from './FunctionDef';
 import {TokenType, IToken} from './Tokenizer';
 
-export interface TNode {
+export interface ITNode {
   type: TokenType;
   value: string;
-  leftChild?: TNode;
-  rightChild?: TNode;
+  leftChild?: ITNode;
+  rightChild?: ITNode;
   argumentType?: ParameterType;
   line?: number;
   from?: number;
   to?: number;
 }
 
-export class RootTNode implements TNode {
+export class RootTNode implements ITNode {
   constructor() {
     this.children = [];
   };
   type: TokenType = TokenType.block;
   value: string;
-  children: TNode[];
+  children: ITNode[];
 
-  add(node: TNode) {
+  add(node: ITNode) {
     this.children.push(node)
   }
 }
 
-export class FunctionTNode implements TNode {
+export class FunctionTNode implements ITNode {
   value: string;
   type: TokenType;
   line: number;
@@ -40,13 +40,13 @@ export class FunctionTNode implements TNode {
   }
 }
 
-export class BlockTNode implements TNode {
+export class BlockTNode implements ITNode {
   type: TokenType;
   line: number;
   from: number;
   to: number;
   value: string;
-  children: TNode[];
+  children: ITNode[];
   constructor(token?: IToken) {
     this.type = TokenType.block;
     this.line = token && token.line || 0;
@@ -55,12 +55,12 @@ export class BlockTNode implements TNode {
     this.children = [];
   };
 
-  add(node: TNode) {
+  add(node: ITNode) {
     this.children.push(node)
   }
 }
 
-export class ArgumentTNode implements TNode {
+export class ArgumentTNode implements ITNode {
   argumentType: ParameterType;
   value: string;
   type: TokenType;
@@ -77,7 +77,7 @@ export class ArgumentTNode implements TNode {
   }
 }
 
-export class OpenBracketTNode implements TNode {
+export class OpenBracketTNode implements ITNode {
   value: string;
   type: TokenType;
   line: number;
@@ -92,7 +92,7 @@ export class OpenBracketTNode implements TNode {
   }
 }
 
-export class PlusMinusNode implements TNode {
+export class PlusMinusNode implements ITNode {
   value: string;
   type: TokenType;
   line: number;
@@ -107,7 +107,7 @@ export class PlusMinusNode implements TNode {
   }
 }
 
-export class MultDivNode implements TNode {
+export class MultDivNode implements ITNode {
   value: string;
   type: TokenType;
   line: number;

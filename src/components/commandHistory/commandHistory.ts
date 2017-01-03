@@ -8,7 +8,7 @@ export let create = b.createComponent(
     {
         render(ctx: b.IBobrilCtx, me: b.IBobrilNode, oldMe?: b.IBobrilCacheNode): void {
             let state = getState(turtleGraphicAppCursor);
-            b.style(me, commandHistoryStyle)
+            b.style(me, commandHistoryStyle);
             me.children = [
                 state.commands.map((e, i) => {
                     if (e)

@@ -1,7 +1,7 @@
 import {TokenType, IToken} from './Tokenizer';
-import {FunctionTNode, ArgumentTNode, OpenBracketTNode, BlockTNode, RootTNode, MultDivNode, PlusMinusNode, TNode} from './Node';
+import {FunctionTNode, ArgumentTNode, BlockTNode, ITNode} from './Node';
 import {ParameterType} from './FunctionDef';
-import {Reporter, IError} from './Reporter';
+import {Reporter} from './Reporter';
 
 export class ParserNew {
   constructor(reporter: Reporter) {
@@ -10,10 +10,9 @@ export class ParserNew {
 
   private tokenArray: IToken[];
   private token: IToken;
-  private currentNode: TNode;
+  private currentNode: ITNode;
   private currentBlockNode: BlockTNode;
   private blockStack: BlockTNode[];
-  private nodeTree: TNode;
   private reporter: Reporter;
 
   parse(tokenArray: IToken[]): BlockTNode {
@@ -24,42 +23,47 @@ export class ParserNew {
     this.getNext();
     this.expression();
     
-    if(this.token.type !== TokenType.epsilon){
-      this.reporter.reportError(this.token.line, this.token.startIndex, this.token.endIndex, "Expected an expression or parameter but found " + this.token.value);
+    if (this.token.type !== TokenType.epsilon){
+      this.reporter.reportError(
+        this.token.line,
+        this.token.startIndex,
+        this.token.endIndex,
+        'Expected an expression or parameter but found ' + this.token.value
+      );
     }
 
     return this.currentBlockNode;
   }
 
-  private addChild(node: TNode): void {
-    if (node == null)
-      this.reporter.reportError(0, 0, 0, "Parse error");
+  private addChild(node: ITNode): void {
+    if (node === null)
+      this.reporter.reportError(0, 0, 0, 'Parse error');
 
-    if (node.type == TokenType.block) {
+    if (node.type === TokenType.block) {
       this.addNodeToStack(this.blockStack, node);
       this.currentBlockNode = <BlockTNode>node;
       this.currentNode.rightChild = this.currentBlockNode;
       this.currentNode = this.currentBlockNode;
     }
 
-    if (node.type == TokenType.keyword) {
+    if (node.type === TokenType.keyword) {
       this.currentNode = node;
       this.currentBlockNode.add(node);
     }
 
-    if (this.currentNode.type == TokenType.keyword && node.type == TokenType.argument) 
+    if (this.currentNode.type === TokenType.keyword && node.type === TokenType.argument) 
       this.currentNode.leftChild = node;
   }
 
-  private addNodeToStack(stack: TNode[], node: TNode) {
+  private addNodeToStack(stack: ITNode[], node: ITNode) {
     stack.push(node);
   }
 
-  private removeNodeFromStack(stack: TNode[]): TNode {
+  /*private removeNodeFromStack(stack: ITNode[]): ITNode {
     return stack.pop();
-  }
+  }*/
 
-  private getFirstFromStack(stack: TNode[]): TNode {
+  private getFirstFromStack(stack: ITNode[]): ITNode {
     return stack[stack.length - 1];
   }
 
@@ -75,7 +79,7 @@ export class ParserNew {
   }
 
   private funct() {
-    if (this.token.type == TokenType.keyword) {
+    if (this.token.type === TokenType.keyword) {
       this.addChild(new FunctionTNode(this.token));
       this.getNext();
       this.arg();
@@ -84,7 +88,7 @@ export class ParserNew {
   }
 
   private arg() {
-    if (this.token.type == TokenType.number || this.token.type == TokenType.colors) {
+    if (this.token.type === TokenType.number || this.token.type === TokenType.colors) {
       this.addChild(new ArgumentTNode(this.token, this.mapEnumTokenTypeToParametrType(this.token.type)));
       this.getNext();
       this.bracket();
@@ -93,20 +97,24 @@ export class ParserNew {
   }
   
   private bracket(){
-
-    if (this.token.type == TokenType.squareBracketOpen) {
+    if (this.token.type === TokenType.squareBracketOpen) {
       let node = new BlockTNode(this.token);
       this.addChild(node);
       this.getNext();
       this.expression();
       let tokenType = <TokenType>this.token.type;
-      if (this.tokenArray.length == 0 && tokenType != TokenType.squareBracketClose)
-        this.reporter.reportError(node.line, node.from, node.to, "Close bracket expected");
-      if (tokenType != TokenType.squareBracketClose){
-        this.reporter.reportError(this.token.line, this.token.startIndex, this.token.endIndex, "Expected an expression but found " + this.token.value);
+      if (this.tokenArray.length === 0 && tokenType !== TokenType.squareBracketClose)
+        this.reporter.reportError(node.line, node.from, node.to, 'Close bracket expected');
+      if (tokenType !== TokenType.squareBracketClose){
+        this.reporter.reportError(
+          this.token.line,
+          this.token.startIndex,
+          this.token.endIndex,
+          'Expected an expression but found ' + this.token.value
+        );
         return;
       }
-      if (tokenType == TokenType.squareBracketClose) {
+      if (tokenType === TokenType.squareBracketClose) {
         this.removeBracket();
         this.currentBlockNode = <BlockTNode>this.getFirstFromStack(this.blockStack)
       }

@@ -17,6 +17,7 @@
     "fun-model": "^1.0.0"
   },
   "devDependencies": {
+    "jasmine": "^2.5.2",
     "requirejs": "^2.1.22"
   }
 }

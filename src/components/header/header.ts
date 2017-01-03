@@ -9,10 +9,17 @@ export function header() {
             me.children = [
                 b.styledDiv(
                     [
-                        b.styledDiv("Turtle Graphics",{fontSize: 72}),
-                        b.styledDiv("LOGO language interpreter",{fontSize: 32})
+                        b.styledDiv('Turtle Graphics',{fontSize: 72}),
+                        b.styledDiv('LOGO language interpreter',{fontSize: 32})
                     ],
-                    {color: "white", top: 50,position: "relative",margin: "0px auto",width: 500, fontFamily: "Helvetica Neue,Helvetica,Arial,sans-serif"})
+                    {
+                        color: 'white', 
+                        top: 50,
+                        position: 'relative',
+                        margin: '0px auto',
+                        width: 500, 
+                        fontFamily: 'Helvetica Neue,Helvetica,Arial,sans-serif'
+                    })
             ];
         }
     })();

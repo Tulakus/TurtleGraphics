@@ -5,10 +5,10 @@ export enum FunctionReturnType {
   string, number, void
 }
 export interface IDefinition {
-  name: string,
-  expectedTypeParameter: ParameterType,
-  areBothChildrenAllowed: boolean,
-  returnedValueType: FunctionReturnType
+  name: string;
+  expectedTypeParameter: ParameterType;
+  areBothChildrenAllowed: boolean;
+  returnedValueType: FunctionReturnType;
 }
 
 export let definitions: IDefinition[] = [

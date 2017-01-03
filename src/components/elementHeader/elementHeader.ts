@@ -3,8 +3,8 @@ import {headerStyle} from './style'
 
 
 interface IData {
-    label: string,
-    button?: any
+    label: string;
+    button?: any;
 }
 
 export interface ICtx extends b.IBobrilCtx {

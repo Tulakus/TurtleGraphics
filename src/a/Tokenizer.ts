@@ -18,24 +18,26 @@ export enum TokenType {
 }
 
 export interface IsymbolRecipe {
-  keyWord: string,
-  definition: ISymbolDefinition[],
-  expectedEnd?: string
+  keyWord: string;
+  definition: ISymbolDefinition[];
+  expectedEnd?: string;
 }
-export interface ISymbolDefinition {
-  value: TokenType[]
-}
-export interface IRegExp {
-  patternType: TokenType,
-  pattern: RegExp | RegExp[]
-}
-export interface IToken {
-  value: string,
-  type: TokenType,
-  line?: number,
-  startIndex?: number,
-  endIndex?: number
 
+export interface ISymbolDefinition {
+  value: TokenType[];
+}
+
+export interface IRegExp {
+  patternType: TokenType;
+  pattern: RegExp | RegExp[];
+}
+
+export interface IToken {
+  value: string;
+  type: TokenType;
+  line?: number;
+  startIndex?: number;
+  endIndex?: number;
 }
 
 export class Tokenizer {
@@ -43,19 +45,24 @@ export class Tokenizer {
     this.keywordsRegex = this.createRegexPatterns(this.keywords);
     this.colorsRegex = this.createRegexPatterns(this.colors);
     this.regexpPattern = this.initializeRegExp();
-    this.reporter = reporter
+    this.reporter = reporter;
   };
   keywords: string[] = ['tl', 'tr', 'fw', 'bw', 'pu', 'pd', 'pwidth', 'pcolor', 'r'];
-  colors: string[] = ('AliceBlue AntiqueWhite Aqua Aquamarine Azure Beige Bisque Black BlanchedAlmond Blue BlueViolet Brown BurlyWood CadetBlue Chartreuse Chocolate Coral ' +
-    'CornflowerBlue Cornsilk Crimson Cyan DarkBlue DarkCyan DarkGoldenRod DarkGray DarkGrey DarkGreen DarkKhaki DarkMagenta DarkOliveGreen DarkOrange ' +
-    'DarkOrchid DarkRed DarkSalmon DarkSeaGreen DarkSlateBlue DarkSlateGray DarkSlateGrey DarkTurquoise DarkViolet DeepPink DeepSkyBlue DimGray DimGrey ' +
-    'DodgerBlue FireBrick FloralWhite ForestGreen Fuchsia Gainsboro GhostWhite Gold GoldenRod Gray Grey Green GreenYellow HoneyDew HotPink IndianRed Indigo ' +
-    'Ivory Khaki Lavender LavenderBlush LawnGreen LemonChiffon LightBlue LightCoral LightCyan LightGoldenRodYellow LightGray LightGrey LightGreen LightPink ' +
-    'LightSalmon LightSeaGreen LightSkyBlue LightSlateGray LightSlateGrey LightSteelBlue LightYellow Lime LimeGreen Linen Magenta Maroon MediumAquaMarine ' +
-    'MediumBlue MediumOrchid MediumPurple MediumSeaGreen MediumSlateBlue MediumSpringGreen MediumTurquoise MediumVioletRed MidnightBlue MintCream MistyRose ' +
-    'Moccasin NavajoWhite Navy OldLace Olive OliveDrab Orange OrangeRed Orchid PaleGoldenRod PaleGreen PaleTurquoise PaleVioletRed PapayaWhip PeachPuff Peru ' +
-    'Pink Plum PowderBlue Purple RebeccaPurple Red RosyBrown RoyalBlue SaddleBrown Salmon SandyBrown SeaGreen SeaShell Sienna Silver SkyBlue SlateBlue ' +
-    'SlateGray SlateGrey Snow SpringGreen SteelBlue Tan Teal Thistle Tomato Turquoise Violet Wheat White WhiteSmoke Yellow YellowGreen').split(' ');
+  colors: string[] = (
+    'AliceBlue AntiqueWhite Aqua Aquamarine Azure Beige Bisque Black BlanchedAlmond Blue BlueViolet Brown BurlyWood' + 
+    'CadetBlue Chartreuse Chocolate Coral CornflowerBlue Cornsilk Crimson Cyan DarkBlue DarkCyan DarkGoldenRod DarkGray ' +
+    'DarkGrey DarkGreen DarkKhaki DarkMagenta DarkOliveGreen DarkOrange DarkOrchid DarkRed DarkSalmon DarkSeaGreen ' +
+    'DarkSlateBlue DarkSlateGray DarkSlateGrey DarkTurquoise DarkViolet DeepPink DeepSkyBlue DimGray DimGrey DodgerBlue ' +
+    'FireBrick FloralWhite ForestGreen Fuchsia Gainsboro GhostWhite Gold GoldenRod Gray Grey Green GreenYellow HoneyDew ' +
+    'HotPink IndianRed Indigo Ivory Khaki Lavender LavenderBlush LawnGreen LemonChiffon LightBlue LightCoral LightCyan ' +
+    'LightGoldenRodYellow LightGray LightGrey LightGreen LightPink LightSalmon LightSeaGreen LightSkyBlue LightSlateGray ' +
+    'LightSlateGrey LightSteelBlue LightYellow Lime LimeGreen Linen Magenta Maroon MediumAquaMarine MediumBlue MediumOrchid ' +
+    'MediumPurple MediumSeaGreen MediumSlateBlue MediumSpringGreen MediumTurquoise MediumVioletRed MidnightBlue MintCream ' +
+    'MistyRose Moccasin NavajoWhite Navy OldLace Olive OliveDrab Orange OrangeRed Orchid PaleGoldenRod PaleGreen PaleTurquoise ' +
+    'PaleVioletRed PapayaWhip PeachPuff Peru Pink Plum PowderBlue Purple RebeccaPurple Red RosyBrown RoyalBlue SaddleBrown ' +
+    'Salmon SandyBrown SeaGreen SeaShell Sienna Silver SkyBlue SlateBlue SlateGray SlateGrey Snow SpringGreen SteelBlue ' +
+    'Tan Teal Thistle Tomato Turquoise Violet Wheat White WhiteSmoke Yellow YellowGreen'
+  ).split(' ');
   keywordsRegex: RegExp[] = [];
   colorsRegex: RegExp[] = [];
   regexpPattern: IRegExp[];
@@ -63,8 +70,8 @@ export class Tokenizer {
   reporter: Reporter;
   
   tokenize(a: string): IToken[] {
-    //if (a.length == 0 || a.trim().length == 0)
-      //this.reporter.reportError(0, 0, 0, "Empty command");
+    // if (a.length == 0 || a.trim().length == 0)
+      // this.reporter.reportError(0, 0, 0, "Empty command");
     let results: IToken[] = [];
     let lines = this.splitInputToLines(a);
 
@@ -72,7 +79,7 @@ export class Tokenizer {
       var line = lines[i];
       var position: number = 0;
 
-      while (line.length != 0) {
+      while (line.length !== 0) {
         let token = this.getToken(line);
 
         token.startIndex = position;
@@ -135,10 +142,12 @@ export class Tokenizer {
   private createRegexPatterns(words: string[]): RegExp[] {
     let beginRegex = /^/;
     let endRegex = /(?![\w\d\S])/;
-    let result: RegExp[] = []
+    let result: RegExp[] = [];
+
     for (let i = 0; i < words.length; i++) {
       result.push(new RegExp(beginRegex.source + words[i] + endRegex.source));
     }
+    
     return result;
   }
 }
