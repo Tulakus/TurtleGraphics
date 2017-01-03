@@ -15,6 +15,7 @@ export let create = b.createComponent<IData>({
     render(context: ICtx, me: b.IBobrilNode, oldMe?: b.IBobrilCacheNode): void {
         b.style(me, commandStyle);
         me.children = [
+            b.style(button({ title: '>', onClick: () => { reuseCommand(context.data.command) }}), {cssFloat: 'left', cursor: 'pointer'}),
             b.styledDiv(context.data.command, style),
             {tag: 'hr'}
         ];
