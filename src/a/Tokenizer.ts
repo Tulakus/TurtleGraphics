@@ -111,27 +111,28 @@ export class Tokenizer {
       { patternType: TokenType.unknown, pattern: /^\S+/ },
     ];
   }
+  
   private splitInputToLines(input: string): string[] {
     let lines = input.split(/\r\n|\r|\n/g)
     return lines;
   }
 
   private getToken(a: string): IToken {
-    var result: IToken;
+    let result: IToken;
     let parsedValue;
     for (let i = 0; i <= this.regexpPattern.length - 1; i++) {
-      if (Array.isArray(this.regexpPattern[i].pattern) == true) {
-        var patternArr = <RegExp[]>this.regexpPattern[i].pattern;
+      if (Array.isArray(this.regexpPattern[i].pattern) === true) {
+        let patternArr = <RegExp[]>this.regexpPattern[i].pattern;
         for (let j = 0; j <= patternArr.length - 1; j++) {
           parsedValue = patternArr[j].exec(a);
-          if (parsedValue != null)
+          if (parsedValue !== null)
             break;
         }
       } else {
-        var pattern = <RegExp>this.regexpPattern[i].pattern;
+        let pattern = <RegExp>this.regexpPattern[i].pattern;
         parsedValue = pattern.exec(a);
       }
-      if (parsedValue != null) {
+      if (parsedValue !== null) {
         result = { value: parsedValue[0], type: this.regexpPattern[i].patternType };
         break;
       }

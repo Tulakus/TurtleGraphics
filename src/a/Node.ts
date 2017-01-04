@@ -56,7 +56,7 @@ export class BlockTNode implements ITNode {
   };
 
   add(node: ITNode) {
-    this.children.push(node)
+    this.children.push(node);
   }
 }
 

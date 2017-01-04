@@ -11,7 +11,7 @@ export class Dispatcher {
   private reporter: Reporter;
 
 dispatch(node: BlockTNode) {
-    if (node.children.length === 0){
+    if (node.children.length === 0) {
       this.reporter.reportError(0, 0, 0, 'Incorrectly parsed command or empty command');
       return;
     }
@@ -22,26 +22,36 @@ dispatch(node: BlockTNode) {
         continue;
 
       let def = this.getDefinition(n.value); 
-      if (def.areBothChildrenAllowed === false && n.leftChild && n.leftChild !== null && n.rightChild && n.rightChild !== null)
+      if (def.areBothChildrenAllowed === false && n.leftChild && n.leftChild !== null && n.rightChild && n.rightChild !== null){
         this.reportError(n, 'Incorrect parameters - this function has allowed ' + 
         this.convertEnumToString(def.expectedTypeParameter) + ' parameter.');
-      if (def.expectedTypeParameter === ParameterType.noParameter && n.leftChild && n.leftChild !== null)
+        return;
+      }
+        
+      if (def.expectedTypeParameter === ParameterType.noParameter && n.leftChild && n.leftChild !== null) {
         this.reportError(n, 'Incorrect parameter type - expected no parameter but found ' + 
         this.convertEnumToString(n.leftChild.argumentType));
-      if (def.expectedTypeParameter === ParameterType.noParameter && n.rightChild && n.rightChild !== null)
+        return;
+      }
+      if (def.expectedTypeParameter === ParameterType.noParameter && n.rightChild && n.rightChild !== null) {
         this.reportError(n, this.buildError('no', 'function block definition'));
+        return;
+      }
       if (def.expectedTypeParameter !== ParameterType.noParameter && n.leftChild === undefined || null 
-      && n.rightChild === undefined || null)
+      && n.rightChild === undefined || null) {
         this.reportError(n, this.buildError(this.convertEnumToString(def.expectedTypeParameter), 'no parameter'));
+        return;
+      }
       if (
         def.expectedTypeParameter !== ParameterType.noParameter 
-        && n.leftChild !== null && n.leftChild.argumentType !== def.expectedTypeParameter) {
+        && n.leftChild !== undefined && n.leftChild.argumentType !== def.expectedTypeParameter) {
         this.reportError(
           n,
           this.buildError( this.convertEnumToString(def.expectedTypeParameter), this.convertEnumToString(n.leftChild.argumentType) )
         );
+        return;
       }      
-      if (n.rightChild && n.rightChild !== null)
+      if (n.rightChild && n.rightChild !== undefined)
         this.dispatch(<BlockTNode>n.rightChild);
     }
   }

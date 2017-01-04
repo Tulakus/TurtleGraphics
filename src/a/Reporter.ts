@@ -1,15 +1,16 @@
 import * as CodeMirror from 'codemirror';
 
 export interface IError {
-    line: number,
-    startCol: number,
-    endCol: number,
-    message: string,
-    type: 'error'
+    line: number;
+    startCol: number;
+    endCol: number;
+    message: string;
+    type: string;
 }
 
 export class Reporter {
     errors: IError[] = []
+    instance: any = {};// == CodeMirror
 
     reportError(line: number, startCol: number, endCol: number, message: string) {
         this.errors.push({
@@ -21,7 +22,6 @@ export class Reporter {
         });
     }
 
-    instance: any = {};// == CodeMirror
     clearEditorMarks(instance: any, gutterId: string) {
         var state = instance.state.lint;
         if (state.hasGutter) instance.clearGutter(gutterId);
@@ -61,20 +61,7 @@ export class Reporter {
         this.errors = [];
     }
     
-    private createLintErrors(errors: IError[]): any[] {
-        var found = [];
-        for (var i = 0; i < errors.length; i++) {
-            let message = errors[i];
-            var startLine = message.line, endLine = message.line, startCol = message.startCol, endCol = message.endCol;
-            found.push({
-                from: { ch: startCol, line: startLine},
-                to: {line: endLine, ch: endCol},
-                message: message.message,
-                severity: message.type
-            });
-        }
-        return found;
-    }
+
 
     groupByLine(annotations) {
         var lines = [];
@@ -139,6 +126,22 @@ export class Reporter {
         }
 
     };
+
+    private createLintErrors(errors: IError[]): any[] {
+        var found = [];
+        for (var i = 0; i < errors.length; i++) {
+            let message = errors[i];
+            var startLine = message.line, endLine = message.line, startCol = message.startCol, endCol = message.endCol;
+            found.push({
+                from: { ch: startCol, line: startLine},
+                to: {line: endLine, ch: endCol},
+                message: message.message,
+                severity: message.type
+            });
+        }
+        return found;
+    }
+
     private makeMarker(labels, severity, multiple, tooltips) {
         function showTooltipFor(e, content, node) {
             var tooltip = showTooltip(e, content);

@@ -23,7 +23,7 @@ export class ParserNew {
     this.getNext();
     this.expression();
     
-    if (this.token.type !== TokenType.epsilon){
+    if (this.token.type !== TokenType.epsilon) {
       this.reporter.reportError(
         this.token.line,
         this.token.startIndex,
@@ -96,16 +96,19 @@ export class ParserNew {
     }
   }
   
-  private bracket(){
+  private bracket() {
     if (this.token.type === TokenType.squareBracketOpen) {
       let node = new BlockTNode(this.token);
       this.addChild(node);
       this.getNext();
       this.expression();
       let tokenType = <TokenType>this.token.type;
-      if (this.tokenArray.length === 0 && tokenType !== TokenType.squareBracketClose)
-        this.reporter.reportError(node.line, node.from, node.to, 'Close bracket expected');
-      if (tokenType !== TokenType.squareBracketClose){
+      if (this.tokenArray.length === 0 && tokenType !== TokenType.squareBracketClose) {
+        this.reporter.reportError(node.line, node.from, node.to, 'Close bracket expected, but found ' + this.token.value);
+        return;
+      }
+        
+      if (tokenType !== TokenType.squareBracketClose) {
         this.reporter.reportError(
           this.token.line,
           this.token.startIndex,
@@ -114,6 +117,7 @@ export class ParserNew {
         );
         return;
       }
+
       if (tokenType === TokenType.squareBracketClose) {
         this.removeBracket();
         this.currentBlockNode = <BlockTNode>this.getFirstFromStack(this.blockStack)

@@ -43,7 +43,7 @@ export let createDefaultTurtleGraphicAppState = (): ITurtleGraphicAppState => {
 	};
 };
 
-export function createDefaultSvgContent(): any[]{
+export function createDefaultSvgContent(): any[] {
 	return 	[		
 				{points: '600,590 600,610', styleDef: b.styleDef({ fill: 'white', stroke: 'black', strokeWidth: '1px' })},
 				{points: '590,600 610,600', styleDef: b.styleDef({ fill: 'white', stroke: 'black', strokeWidth: '1px' })}

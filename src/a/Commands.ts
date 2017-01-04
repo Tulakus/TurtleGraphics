@@ -24,27 +24,16 @@ export default class Commands {
   results: any[] = [];
   subresult: string = '' + this.lastX + ',' + this.lastY + ' ';
   shouldCreateNewLine: boolean = false;
-  
-  private createNewLine(){
-    let newLine = '' + this.lastX + ',' + this.lastY + ' ';
-    if (newLine === this.subresult)
-      return;
-    let result = { points: this.subresult, styleDef: b.styleDef({ fill: 'white', stroke: this.pColor, strokeWidth: this.pWidth + 'px' }) };
-    this.results.push(result);
     
-    this.subresult = newLine;
-    this.shouldCreateNewLine = false;
-  }
-  
   commands: ICommand[] = [
-    { command: "tl", nextValue: "number", calledFunc: (p: string) => { return this.changeAngle(p, true) } },
-    { command: "tr", nextValue: "number", calledFunc: (p: string) => { return this.changeAngle(p, false) } },
-    { command: "fw", nextValue: "number", calledFunc: (p: string) => { return this.createLine(p, true) } },
-    { command: "bw", nextValue: "number", calledFunc: (p: string) => { return this.createLine(p, false) } },
-    { command: "pu", nextValue: "", calledFunc: () => { return this.setPainting(false) } },
-    { command: "pd", nextValue: "", calledFunc: () => { return this.setPainting(true) } },
-    { command: "pcolor", nextValue: "string", calledFunc: (p: string) => { return this.setPenColor(p) } },
-    { command: "pwidth", nextValue: "number", calledFunc: (p: string) => { return this.setPenWidth(p) } },
+    { command: 'tl', nextValue: 'number', calledFunc: (p: string) => { return this.changeAngle(p, true); } },
+    { command: 'tr', nextValue: 'number', calledFunc: (p: string) => { return this.changeAngle(p, false); } },
+    { command: 'fw', nextValue: 'number', calledFunc: (p: string) => { return this.createLine(p, true); } },
+    { command: 'bw', nextValue: 'number', calledFunc: (p: string) => { return this.createLine(p, false); } },
+    { command: 'pu', nextValue: '', calledFunc: () => { return this.setPainting(false); } },
+    { command: 'pd', nextValue: '', calledFunc: () => { return this.setPainting(true); } },
+    { command: 'pcolor', nextValue: 'string', calledFunc: (p: string) => { return this.setPenColor(p); } },
+    { command: 'pwidth', nextValue: 'number', calledFunc: (p: string) => { return this.setPenWidth(p); } },
   ];
 
   runCommands(node: BlockTNode): any[]{
@@ -53,7 +42,12 @@ export default class Commands {
     
   }
   
-private traverse(node: BlockTNode){
+    getResult(): any[] {
+    this.createNewLine();
+    return this.results;
+  }
+
+  private traverse(node: BlockTNode){
     if (node.children.length === 0)
       this.reporter.reportError(0, 0, 0, 'Error - incorrectly parsed command');
       
@@ -66,7 +60,7 @@ private traverse(node: BlockTNode){
         let args = node.children[i].leftChild === undefined || null ? [] : [node.children[i].leftChild.value];
         let res = a.calledFunc.apply(null, args);
         
-        if(res === undefined || res === null || res === true)
+        if (res === undefined || res === null || res === true)
           continue;
                     
         this.subresult = this.subresult + res.newX + ',' + res.newY + ' ';
@@ -74,19 +68,14 @@ private traverse(node: BlockTNode){
         if (node.children[i].leftChild.value.length === 0)
           continue;
 
-        var repeatTimes: number = parseInt(node.children[i].leftChild.value, 10);
+        let repeatTimes: number = parseInt(node.children[i].leftChild.value, 10);
         if (Number.isNaN(repeatTimes))
           this.reporter.reportError(0, 0, 0, 'Repeat times musst be integer value');
-        for (var j = 0; j < repeatTimes; j++) {
+        for (let j = 0; j < repeatTimes; j++) {
           this.traverse(<BlockTNode>node.children[i].rightChild);
         }
       }
     }
-  }
-
-  getResult(): any[] {
-    this.createNewLine();
-    return this.results;
   }
 
   private setPainting(v: boolean): boolean {
@@ -109,6 +98,17 @@ private traverse(node: BlockTNode){
     this.pWidth = m;
     
     return true;
+  }
+
+    private createNewLine(){
+    let newLine = '' + this.lastX + ',' + this.lastY + ' ';
+    if (newLine === this.subresult)
+      return;
+    let result = { points: this.subresult, styleDef: b.styleDef({ fill: 'white', stroke: this.pColor, strokeWidth: this.pWidth + 'px' }) };
+    this.results.push(result);
+    
+    this.subresult = newLine;
+    this.shouldCreateNewLine = false;
   }
 
   private createLine(moveBy: string, forward: boolean): any {
