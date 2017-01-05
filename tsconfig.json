@@ -18,8 +18,7 @@
     },
     "compileOnSave": false,
     "files": [
-        "C:/Users/Martin/AppData/Roaming/npm/node_modules/bobril-build/typings/jasmine/jasmine.d.ts",
-        "node_modules/bobril/jsx.d.ts"
+        "C:/Users/Martin/AppData/Roaming/npm/node_modules/bobril-build/typings/jasmine/jasmine.d.ts"
     ],
     "include": [
         "**/*"

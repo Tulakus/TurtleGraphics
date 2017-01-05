@@ -5,7 +5,6 @@ import {Reporter} from './Reporter';
 
 interface ICommand { 
   command: string;
-  nextValue: string;
   calledFunc: (p: string, q?: string[]) => any; 
 }
 
@@ -24,27 +23,40 @@ export default class Commands {
   results: any[] = [];
   subresult: string = '' + this.lastX + ',' + this.lastY + ' ';
   shouldCreateNewLine: boolean = false;
-    
-  commands: ICommand[] = [
-    { command: 'tl', nextValue: 'number', calledFunc: (p: string) => { return this.changeAngle(p, true); } },
-    { command: 'tr', nextValue: 'number', calledFunc: (p: string) => { return this.changeAngle(p, false); } },
-    { command: 'fw', nextValue: 'number', calledFunc: (p: string) => { return this.createLine(p, true); } },
-    { command: 'bw', nextValue: 'number', calledFunc: (p: string) => { return this.createLine(p, false); } },
-    { command: 'pu', nextValue: '', calledFunc: () => { return this.setPainting(false); } },
-    { command: 'pd', nextValue: '', calledFunc: () => { return this.setPainting(true); } },
-    { command: 'pcolor', nextValue: 'string', calledFunc: (p: string) => { return this.setPenColor(p); } },
-    { command: 'pwidth', nextValue: 'number', calledFunc: (p: string) => { return this.setPenWidth(p); } },
+  styles: any = {}; 
+  commandList: ICommand[] = [
+    { command: 'tl',  calledFunc: (p: string) => { return this.changeAngle(p, true); } },
+    { command: 'tr',  calledFunc: (p: string) => { return this.changeAngle(p, false); } },
+    { command: 'fw',  calledFunc: (p: string) => { return this.createLine(p, true); } },
+    { command: 'bw',  calledFunc: (p: string) => { return this.createLine(p, false); } },
+    { command: 'pu',  calledFunc: () => { return this.setPainting(false); } },
+    { command: 'pd',  calledFunc: () => { return this.setPainting(true); } },
+    { command: 'pcolor', calledFunc: (p: string) => { return this.setPenColor(p); } },
+    { command: 'pwidth', calledFunc: (p: string) => { return this.setPenWidth(p); } },
   ];
 
-  runCommands(node: BlockTNode): any[]{
+  runCommands(node: BlockTNode): any[] {
     this.traverse(node);
     return this.getResult();
-    
   }
   
-    getResult(): any[] {
+  getResult(): any[] {
     this.createNewLine();
     return this.results;
+  }
+
+  getStyle() {
+    let style = this.pColor + ' ' + this.pWidth;
+    if (this.styles.hasOwnProperty(style)) {
+      return this.styles[style];
+    } else {
+      this.styles[style] = b.styleDef({
+                fill: 'transparent', 
+                stroke: this.pColor, 
+                strokeWidth: this.pWidth + 'px' 
+                });
+      return this.styles[style];
+    }
   }
 
   private traverse(node: BlockTNode){
@@ -56,7 +68,7 @@ export default class Commands {
         continue;
       
       if (node.children[i].rightChild === undefined) {
-        let a = this.commands.filter((e) => { return e.command === node.children[i].value; })[0];
+        let a = this.commandList.filter((e) => { return e.command === node.children[i].value; })[0];
         let args = node.children[i].leftChild === undefined || null ? [] : [node.children[i].leftChild.value];
         let res = a.calledFunc.apply(null, args);
         
@@ -78,42 +90,51 @@ export default class Commands {
     }
   }
 
-  private setPainting(v: boolean): boolean {
+  private setPainting(value: boolean): boolean {
     this.createNewLine();
-    this.isPaintng = v;
+    this.isPaintng = value;
     return true;
   }
 
-  private setPenColor(v: string): boolean {
+  private setPenColor(value: string): boolean {
+    if (value === this.pColor)
+      return true;
     this.createNewLine();
-    this.pColor = v;
+    this.pColor = value;
     return true;
   }
 
-  private setPenWidth(v: string): boolean {
-    let m = parseInt(v, 10);
-    if (m < 1)
+  private setPenWidth(value: string): boolean {
+    let width = parseInt(value, 10);
+    if (width === this.pWidth)
+      return true;
+
+    if (width < 1)
       this.reporter.reportError(0, 0, 0, 'Pen width musst be number > 1');
     this.createNewLine();
-    this.pWidth = m;
+    this.pWidth = width;
     
     return true;
   }
 
-    private createNewLine(){
+  private createNewLine() {
     let newLine = '' + this.lastX + ',' + this.lastY + ' ';
     if (newLine === this.subresult)
       return;
-    let result = { points: this.subresult, styleDef: b.styleDef({ fill: 'white', stroke: this.pColor, strokeWidth: this.pWidth + 'px' }) };
+
+    let result = { 
+      points: this.subresult, 
+      styleDef: this.getStyle()
+    };
     this.results.push(result);
     
     this.subresult = newLine;
     this.shouldCreateNewLine = false;
   }
 
-  private createLine(moveBy: string, forward: boolean): any {
-    let m = Number.parseInt(moveBy);
-    let newPosition = this.calculateNextPoint(m, forward);
+
+  private createLine(distance: string, forward: boolean): any {
+    let newPosition = this.calculateNewPosition(distance, forward);
     let result = null;
 
     if (this.isPaintng)
@@ -130,7 +151,8 @@ export default class Commands {
     // return null;
   }
 
-  private calculateNextPoint(moveBy: number, forward: boolean): any {
+  private calculateNewPosition(distance: string, forward: boolean): any {
+    let moveBy = Number.parseInt(distance);
     let toDegrees = Math.PI / 180;
     // if true -> forward else backward
     forward ? moveBy : moveBy = - moveBy;

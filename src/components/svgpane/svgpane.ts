@@ -28,7 +28,6 @@ export let create = b.createComponent<IData>({
         ctx.isDraggingEnabled = false;
     },
     onDragStart(ctx: ICtx, dndCtx: b.IDndCtx): boolean {
-        var dnd = ctx.data;
         ctx.startY = parseInt(document.getElementById('svgpane').style.top, 10);
         ctx.startX = parseInt(document.getElementById('svgpane').style.left, 10);
         ctx.isDraggingEnabled = true;
@@ -89,7 +88,8 @@ export let create = b.createComponent<IData>({
             left: ctx.left, 
             position: 'relative', 
             cursor: ctx.cursor || 'auto',
-            borderStyle: 'solid', borderWidth: ctx.borderWidth
+            borderStyle: 'solid', 
+            borderWidth: ctx.borderWidth
         },
         me.children = [
             {
@@ -131,8 +131,6 @@ export let create = b.createComponent<IData>({
         ctx.parrentWidth - elmWidth === 0 ? ctx.borderWidth = 0 : ctx.borderWidth = svgBorderWidth;
         ctx.left = (ctx.parrentWidth - elmWidth - 2 * ctx.borderWidth) / 2;
         ctx.top = (ctx.parrentHeight - elmHeight - 2 * ctx.borderWidth) / 2;
-        //ctx.left = (ctx.parrentWidth / 2) - (element.clientWidth / 2);// tohle je puvodni varianta, ale ve FF me element.clientWidth vracel 0 prestoze mel element sirku 1200
-        //ctx.top = (ctx.parrentHeight / 2) - (element.clientHeight / 2);
         b.invalidate(ctx);
     }           
-})
+});

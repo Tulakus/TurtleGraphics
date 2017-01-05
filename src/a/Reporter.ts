@@ -10,7 +10,7 @@ export interface IError {
 
 export class Reporter {
     errors: IError[] = []
-    instance: any = {};// == CodeMirror
+    instance: any = {}; // == CodeMirror
 
     reportError(line: number, startCol: number, endCol: number, message: string) {
         this.errors.push({
@@ -30,7 +30,7 @@ export class Reporter {
         state.marked.length = 0;
     };
 
-    setEditor(editor: any){
+    setEditor(editor: any) {
         this.instance = editor;
     }
     
